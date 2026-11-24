@@ -1,4 +1,4 @@
-# models/pagina.py — Model: dados que a página exibe
+
 
 
 class Pilar:
