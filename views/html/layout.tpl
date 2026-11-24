@@ -4,29 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}}</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    % # versão dos arquivos estáticos: mudar o número obriga o navegador a baixar de novo
+    % v = '5'
+    % # o tema escolhido fica num cookie, então a página já vem no tema certo
+    % from bottle import request
+    % tema = request.get_cookie('tema', '')
+    <link rel="stylesheet" href="/static/css/style.css?v={{v}}">
 </head>
-<body>
+<body class="{{'escuro' if tema == 'escuro' else ''}}">
+    % usuario = get('usuario', None)
     <header class="topo">
         <div class="container topo__conteudo">
             <a class="logo" href="/">&lt;OO/&gt; Guia</a>
             <nav>
-                <a href="#pilares">Pilares</a>
-                <a href="#quiz">Quiz</a>
-                <a href="#sobre">Sobre</a>
-                <button id="btn-tema" class="btn-tema" type="button" aria-label="Alternar tema">🌙</button>
+                % if usuario:
+                <a href="/guia">Guia</a>
+                <a href="/quiz">Quiz</a>
+                <a href="/desempenho">Desempenho</a>
+                <a href="/questoes">Questões</a>
+                <span class="nav__usuario">Olá, {{usuario.primeiro_nome}}</span>
+                <a href="/logout" class="nav__sair">Sair</a>
+                % end
+                <button id="btn-tema" class="btn-tema" type="button" aria-label="Alternar tema">{{'☀️' if tema == 'escuro' else '🌙'}}</button>
             </nav>
         </div>
     </header>
+
+    % mensagem = get('mensagem', '')
+    % if mensagem:
+    <div id="toast" class="toast">{{mensagem}}</div>
+    % end
 
     {{!base}}
 
     <footer class="rodape">
         <div class="container">
-            Projeto BMVC I — Orientação a Objetos · UnB · Servido com Python + Bottle
+            Projeto BMVC — Orientação a Objetos · UnB · Servido com Python + Bottle
         </div>
     </footer>
 
-    <script src="/static/js/main.js"></script>
+    <script src="/static/js/main.js?v={{v}}"></script>
+    % for s in get('scripts', []):
+    <script src="/static/js/{{s}}?v={{v}}"></script>
+    % end
 </body>
 </html>
