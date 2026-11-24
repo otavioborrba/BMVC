@@ -105,3 +105,181 @@ nav a:hover { color: var(--primaria); }
     .hero h1 { font-size: 1.8rem; }
     nav { gap: 10px; font-size: .9rem; }
 }
+
+/* ======================================================
+   BMVC II — login, CRUD de questões e quiz
+   ====================================================== */
+.oculto { display: none !important; }
+h1 { line-height: 1.25; }
+main.container > h1, .cabecalho-pagina h1 { font-size: 1.9rem; margin-top: 36px; }
+.estreito { max-width: 760px; }
+
+/* ----- variações de botão ----- */
+.btn--pequeno { padding: 6px 14px; font-size: .9rem; }
+.btn--contorno { background: transparent !important; color: #fff !important; border: 2px solid #fff; margin-left: 8px; }
+.btn--contorno-escuro { background: transparent; color: var(--primaria); border: 1px solid var(--primaria); }
+.btn--perigo { background: var(--erro); }
+.btn--cheio { width: 100%; }
+.link-btn { background: none; border: none; color: var(--primaria); cursor: pointer; font-size: .9rem; font-weight: 600; margin-right: auto; }
+nav .btn { color: #fff; }
+.nav__usuario { color: var(--suave); font-size: .9rem; }
+.nav__sair { color: var(--erro) !important; }
+
+/* ----- toast de mensagem ----- */
+.toast {
+    position: fixed; top: 76px; right: 20px; z-index: 50;
+    background: var(--ok); color: #fff; padding: 12px 18px; border-radius: 8px;
+    box-shadow: 0 6px 20px rgba(0,0,0,.15); font-weight: 600;
+    animation: surgir .3s ease; transition: opacity .5s, transform .5s;
+}
+.toast.saindo { opacity: 0; transform: translateY(-10px); }
+
+/* ----- alertas ----- */
+.alerta { padding: 10px 14px; border-radius: 8px; margin: 12px 0; font-size: .95rem; }
+.alerta--erro { background: rgba(214,69,69,.12); color: var(--erro); border: 1px solid rgba(214,69,69,.35); }
+
+/* ----- HERO de login ----- */
+.hero--login { text-align: left; padding: 64px 0 80px; min-height: calc(100vh - 140px); display: flex; align-items: center; }
+.hero-login { display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items: center; width: 100%; }
+.hero-login__texto h1 { font-size: 2.3rem; margin: 14px 0; }
+.hero-login__texto p { font-size: 1.1rem; opacity: .95; max-width: 520px; }
+.selo { display: inline-block; background: rgba(255,255,255,.18); padding: 4px 12px; border-radius: 20px; font-size: .85rem; font-weight: 600; }
+.hero-login__lista { list-style: none; display: flex; gap: 22px; margin-top: 24px; flex-wrap: wrap; }
+.hero-login__lista li { background: rgba(255,255,255,.12); padding: 8px 14px; border-radius: 8px; }
+
+.painel-login {
+    background: var(--card); color: var(--texto); border-radius: 14px; padding: 28px;
+    box-shadow: 0 20px 50px rgba(0,0,0,.25);
+}
+.abas { display: flex; background: var(--bg); border-radius: 10px; padding: 4px; margin-bottom: 18px; }
+.aba { flex: 1; border: none; background: none; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 600; color: var(--suave); }
+.aba.ativa { background: var(--card); color: var(--primaria); box-shadow: 0 2px 6px rgba(0,0,0,.08); }
+
+/* ----- formulários ----- */
+.form { display: grid; gap: 16px; }
+.form label { display: grid; gap: 6px; font-weight: 600; font-size: .95rem; }
+.form small { font-weight: 400; color: var(--suave); }
+.form input[type=text], .form input[type=email], .form input[type=password],
+.form textarea, .form select, .filtros input {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--borda); border-radius: 8px;
+    background: var(--bg); color: var(--texto); font: inherit; font-weight: 400;
+}
+.form input:focus, .form textarea:focus, .form select:focus, .filtros input:focus {
+    outline: 2px solid var(--primaria); outline-offset: -1px;
+}
+.campo-senha { position: relative; display: block; }
+.ver-senha { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); border: none; background: none; cursor: pointer; font-size: 1rem; }
+.form--card { background: var(--card); border: 1px solid var(--borda); border-radius: 12px; padding: 24px; margin-top: 16px; }
+.form fieldset { border: none; display: grid; gap: 10px; }
+.form legend { font-weight: 600; margin-bottom: 8px; }
+.contador { justify-self: end; }
+.alternativa { display: flex; align-items: center; gap: 10px; padding: 6px; border-radius: 8px; border: 1px solid transparent; }
+.alternativa.marcada { border-color: var(--ok); background: rgba(31,157,85,.08); }
+.alternativa input[type=radio] { accent-color: var(--ok); width: 18px; height: 18px; }
+.alternativa .letra { font-weight: 700; color: var(--primaria); width: 18px; }
+.form__acoes { display: flex; justify-content: flex-end; gap: 10px; }
+.voltar { display: inline-block; margin-top: 24px; color: var(--suave); text-decoration: none; }
+.voltar:hover { color: var(--primaria); }
+
+/* ----- lista de questões ----- */
+.cabecalho-pagina { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+.cabecalho-pagina .dica { margin-bottom: 0; }
+.cabecalho-pagina__acoes { display: flex; gap: 10px; }
+.filtros { display: grid; gap: 12px; margin: 24px 0 16px; }
+.filtros__pilares { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip { border: 1px solid var(--borda); background: var(--card); color: var(--texto); padding: 6px 14px; border-radius: 20px; cursor: pointer; font-size: .9rem; }
+.chip.ativo { background: var(--primaria); color: #fff; border-color: var(--primaria); }
+.lista-questoes { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.questao { background: var(--card); border: 1px solid var(--borda); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 10px; animation: surgir .25s ease; }
+.questao__topo { display: flex; justify-content: space-between; align-items: center; }
+.questao__autor { font-size: .8rem; color: var(--suave); }
+.questao h3 { font-size: 1.05rem; }
+.questao__alts { padding-left: 22px; color: var(--suave); font-size: .95rem; }
+.questao.revelada .correta { color: var(--ok); font-weight: 700; }
+.questao.revelada .correta::after { content: ' ✔'; }
+.questao__acoes { display: flex; gap: 8px; align-items: center; margin-top: auto; padding-top: 8px; border-top: 1px solid var(--borda); }
+.questao__acoes form { margin: 0; }
+.tag { display: inline-block; background: rgba(47,111,237,.12); color: var(--primaria); padding: 2px 10px; border-radius: 20px; font-size: .8rem; font-weight: 700; }
+.vazio { text-align: center; color: var(--suave); padding: 40px 0; }
+
+/* ----- modal de exclusão ----- */
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 16px; }
+.modal__caixa { background: var(--card); border-radius: 12px; padding: 24px; max-width: 420px; width: 100%; animation: surgir .2s ease; }
+.modal__caixa p { color: var(--suave); margin: 10px 0 20px; }
+.modal__acoes { display: flex; justify-content: flex-end; gap: 10px; }
+
+/* ----- quiz ----- */
+.progresso { height: 6px; background: var(--borda); border-radius: 6px; overflow: hidden; margin-bottom: 18px; }
+.progresso__barra { height: 100%; width: 0; background: var(--primaria); transition: width .4s ease; }
+.quiz .tag { margin-bottom: 10px; }
+
+@media (max-width: 800px) {
+    .hero-login { grid-template-columns: 1fr; }
+    .hero-login__texto h1 { font-size: 1.8rem; }
+    .nav__usuario { display: none; }
+}
+.painel-login .btn { background: var(--primaria); color: #fff; }
+.painel-login .btn:hover { background: var(--primaria-escura); }
+.link-btn { white-space: nowrap; }
+
+/* ======================================================
+   Perfis, resumo no Guia, quiz com resultado e desempenho
+   ====================================================== */
+.tag--admin { background: rgba(123,77,255,.15); color: #7b4dff; margin-left: 4px; }
+.tag--ok { background: rgba(31,157,85,.15); color: var(--ok); }
+.tag--erro { background: rgba(214,69,69,.15); color: var(--erro); }
+
+/* resumo do desempenho no topo do Guia */
+.resumo {
+    display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+    background: var(--card); border: 1px solid var(--borda); border-radius: 12px;
+    padding: 18px 22px; margin-top: -32px; position: relative; box-shadow: 0 8px 24px rgba(0,0,0,.06);
+}
+.resumo__numero { font-size: 2.2rem; font-weight: 800; color: var(--primaria); min-width: 80px; text-align: center; }
+.resumo__texto { flex: 1; display: grid; gap: 2px; min-width: 220px; }
+.resumo__texto span { color: var(--suave); }
+
+/* quiz: tela inicial e resultado */
+#quiz-inicio .filtros__pilares { margin-bottom: 14px; }
+#quiz-inicio .btn { margin-top: 8px; }
+.resultado-quiz { text-align: center; }
+.resultado-quiz__numero { font-size: 3.4rem; font-weight: 800; color: var(--primaria); }
+.resultado-quiz .form__acoes { justify-content: center; margin-top: 16px; }
+
+/* estatísticas */
+.estatisticas { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-top: 24px; }
+.estat { background: var(--card); border: 1px solid var(--borda); border-radius: 12px; padding: 18px; display: grid; gap: 4px; }
+.estat__valor { font-size: 2rem; font-weight: 800; }
+.estat__rotulo { color: var(--suave); font-size: .9rem; }
+.estat--destaque { background: linear-gradient(135deg, var(--primaria), #7b4dff); color: #fff; border: none; }
+.estat--destaque .estat__rotulo { color: rgba(255,255,255,.85); }
+
+/* barras por pilar */
+.barras { display: grid; gap: 14px; background: var(--card); border: 1px solid var(--borda); border-radius: 12px; padding: 20px; margin-top: 12px; }
+.barra-pilar { display: grid; grid-template-columns: 130px 1fr 50px 110px; align-items: center; gap: 12px; }
+.barra-pilar__nome { font-weight: 600; }
+.barra-pilar__trilho { height: 12px; background: var(--borda); border-radius: 12px; overflow: hidden; }
+.barra-pilar__valor { height: 100%; width: 0; border-radius: 12px; transition: width .9s ease; }
+.barra-pilar__valor.alto { background: var(--ok); }
+.barra-pilar__valor.medio { background: #e6a23c; }
+.barra-pilar__valor.baixo { background: var(--erro); }
+.barra-pilar__pct { font-weight: 700; text-align: right; }
+.barra-pilar__info { color: var(--suave); font-size: .85rem; }
+
+/* tabela de histórico */
+.tabela { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--borda); border-radius: 12px; overflow: hidden; margin-top: 12px; }
+.tabela th, .tabela td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--borda); }
+.tabela th { font-size: .85rem; color: var(--suave); text-transform: uppercase; letter-spacing: .03em; }
+.tabela tr:last-child td { border-bottom: none; }
+.vazio .btn { margin-top: 12px; }
+
+@media (max-width: 600px) {
+    .barra-pilar { grid-template-columns: 1fr 50px; }
+    .barra-pilar__trilho { grid-column: 1 / -1; grid-row: 2; }
+    .barra-pilar__info { display: none; }
+}
+.logo { white-space: nowrap; }
+@media (max-width: 600px) {
+    nav { gap: 8px; font-size: .82rem; }
+    .btn-tema { width: 30px; height: 30px; }
+}
