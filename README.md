@@ -2,7 +2,7 @@
 
 OOficina - site destinado ao desenvolvimento de habilidades do usuário em relaçao ao conteúdo de POO
 
-Conta de administrador criada automaticamente: `admin@bmvc.com` / senha `admin123`.
+Conta de administrador: `admin@bmvc.com` / senha `admin123`.
 
 ## Como executar
 
