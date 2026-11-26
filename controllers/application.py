@@ -1,7 +1,7 @@
 # controllers/application.py — Controller: recebe as requisições e escolhe a view
 import json
 
-from bottle import template, request, response, redirect
+from bottle import template, request, response, redirect, HTTPResponse
 
 from models.pagina import Pagina
 from models.questao import PILARES
@@ -17,6 +17,11 @@ MENSAGENS = {
     'bemvindo': 'Login feito. Bons estudos!',
     'conta': 'Conta criada. Bem-vindo(a)!',
     'saiu': 'Você saiu da sua conta.',
+    'promovido': 'Usuário promovido a administrador.',
+    'rebaixado': 'Usuário voltou a ser estudante.',
+    'usuario_excluido': 'Usuário excluído.',
+    'proprio': 'Você não pode alterar ou excluir a sua própria conta pelo painel.',
+    'ultimo_admin': 'O sistema precisa ter pelo menos um administrador.',
 }
 
 
@@ -40,6 +45,15 @@ class Application:
             redirect('/')
         return usuario
 
+    def exigir_acesso(self, area):
+        """Controle de acesso: sem login vai para o login;
+        logado sem permissão recebe a página de acesso restrito (403)."""
+        usuario = self.exigir_login()
+        if not usuario.pode_acessar(area):
+            pagina = template('views/html/restrito', usuario=usuario)
+            raise HTTPResponse(body=pagina, status=403)
+        return usuario
+
     def _entrar(self, usuario):
         response.set_cookie('usuario', usuario.email, secret=SEGREDO_COOKIE,
                             path='/', httponly=True)
@@ -51,7 +65,7 @@ class Application:
     # Páginas gerais
     # ------------------------------------------------------------------
     def guia(self):
-        usuario = self.exigir_login()
+        usuario = self.exigir_acesso('guia')
         desempenho = Desempenho(self.resultados.do_usuario(usuario.email))
         return template('views/html/guia', pagina=Pagina.home(), usuario=usuario,
                         desempenho=desempenho, mensagem=self._mensagem())
@@ -97,10 +111,10 @@ class Application:
         redirect('/?msg=saiu')
 
     # ------------------------------------------------------------------
-    # CRUD de questões (qualquer usuário logado)
+    # CRUD de questões (área restrita: somente administrador)
     # ------------------------------------------------------------------
     def questoes_listar(self):
-        usuario = self.exigir_login()
+        usuario = self.exigir_acesso('questoes')
         questoes = sorted(self.questoes.listar(), key=lambda q: q.id)
         return template('views/html/questoes', usuario=usuario,
                         questoes=questoes, pilares=PILARES,
@@ -135,10 +149,10 @@ class Application:
         }
 
     def questao_nova_get(self):
-        return self._form(self.exigir_login())
+        return self._form(self.exigir_acesso('questoes'))
 
     def questao_nova_post(self):
-        usuario = self.exigir_login()
+        usuario = self.exigir_acesso('questoes')
         d = self._dados_do_formulario()
         try:
             self.questoes.criar(d['enunciado'], d['alternativas'],
@@ -148,14 +162,14 @@ class Application:
         redirect('/questoes?msg=criada')
 
     def questao_editar_get(self, id):
-        usuario = self.exigir_login()
+        usuario = self.exigir_acesso('questoes')
         questao = self.questoes.buscar(id)
         if questao is None:
             return self.erro404()
         return self._form(usuario, questao)
 
     def questao_editar_post(self, id):
-        usuario = self.exigir_login()
+        usuario = self.exigir_acesso('questoes')
         questao = self.questoes.buscar(id)
         if questao is None:
             return self.erro404()
@@ -168,7 +182,7 @@ class Application:
         redirect('/questoes?msg=editada')
 
     def questao_excluir(self, id):
-        self.exigir_login()
+        self.exigir_acesso('questoes')
         try:
             self.questoes.excluir(id)
         except KeyError:
@@ -179,7 +193,7 @@ class Application:
     # Quiz e desempenho (qualquer usuário logado)
     # ------------------------------------------------------------------
     def quiz(self):
-        usuario = self.exigir_login()
+        usuario = self.exigir_acesso('quiz')
         lista = [{'id': q.id, 'enunciado': q.enunciado, 'alternativas': q.alternativas,
                   'correta': q.correta, 'pilar': q.pilar}
                  for q in self.questoes.listar()]
@@ -210,6 +224,50 @@ class Application:
                 'percentual': resultado.percentual, 'indice_geral': geral.indice_geral}
 
     def desempenho(self):
-        usuario = self.exigir_login()
+        usuario = self.exigir_acesso('desempenho')
         desempenho = Desempenho(self.resultados.do_usuario(usuario.email))
         return template('views/html/desempenho', usuario=usuario, desempenho=desempenho)
+
+    # ------------------------------------------------------------------
+    # Painel do administrador (área restrita)
+    # ------------------------------------------------------------------
+    def admin(self):
+        admin = self.exigir_acesso('admin')
+        linhas = []
+        for u in sorted(self.usuarios.listar(), key=lambda u: (not u.eh_admin, u.nome.lower())):
+            d = Desempenho(self.resultados.do_usuario(u.email))
+            linhas.append({'usuario': u, 'quizzes': d.quizzes, 'indice': d.indice_geral})
+        todos = Desempenho(self.resultados.listar())
+        questoes = self.questoes.listar()
+        por_pilar = [(p, sum(1 for q in questoes if q.pilar == p)) for p in PILARES]
+        return template('views/html/admin', usuario=admin, linhas=linhas,
+                        total_usuarios=len(linhas),
+                        total_admins=self.usuarios.total_admins(),
+                        total_questoes=len(questoes), por_pilar=por_pilar,
+                        geral=todos, mensagem=self._mensagem())
+
+    def admin_alterar_perfil(self, email):
+        admin = self.exigir_acesso('admin')
+        if email.lower() == admin.email:
+            redirect('/admin?msg=proprio')
+        para_admin = request.forms.get('perfil') == 'admin'
+        try:
+            self.usuarios.alterar_perfil(email, para_admin)
+        except KeyError:
+            return self.erro404()
+        except ValueError:
+            redirect('/admin?msg=ultimo_admin')
+        redirect('/admin?msg=' + ('promovido' if para_admin else 'rebaixado'))
+
+    def admin_excluir_usuario(self, email):
+        admin = self.exigir_acesso('admin')
+        if email.lower() == admin.email:
+            redirect('/admin?msg=proprio')
+        try:
+            self.usuarios.excluir(email)
+        except KeyError:
+            return self.erro404()
+        except ValueError:
+            redirect('/admin?msg=ultimo_admin')
+        self.resultados.excluir_do_usuario(email.lower())
+        redirect('/admin?msg=usuario_excluido')
