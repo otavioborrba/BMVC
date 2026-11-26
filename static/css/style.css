@@ -317,3 +317,51 @@ nav .btn { color: #fff; }
 .logo__oo { color: var(--primaria); }
 .logo__sub { font-size: .72rem; font-weight: 500; color: var(--suave); }
 @media (max-width: 800px) { .logo__sub { display: none; } }
+
+/* ======================================================
+   Tempo real (WebSocket): indicador online, ranking e feed
+   ====================================================== */
+.online { display: inline-flex; align-items: center; gap: 6px; font-size: .85rem; color: var(--ok); font-weight: 600; cursor: default; }
+.online i { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 0 rgba(31,157,85,.6); animation: pulsar 1.8s infinite; }
+.online.desconectado { color: var(--suave); }
+.online.desconectado i { background: var(--suave); animation: none; }
+@keyframes pulsar { 0% { box-shadow: 0 0 0 0 rgba(31,157,85,.55); } 70% { box-shadow: 0 0 0 8px rgba(31,157,85,0); } 100% { box-shadow: 0 0 0 0 rgba(31,157,85,0); } }
+.pulso { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--erro); margin-right: 4px; vertical-align: middle; animation: pulsar-vermelho 1.6s infinite; }
+@keyframes pulsar-vermelho { 0% { box-shadow: 0 0 0 0 rgba(214,69,69,.55); } 70% { box-shadow: 0 0 0 8px rgba(214,69,69,0); } 100% { box-shadow: 0 0 0 0 rgba(214,69,69,0); } }
+.tag--vivo { background: rgba(214,69,69,.12); color: var(--erro); margin-top: 28px; }
+.cabecalho-pagina .tag--vivo + h1 { margin-top: 6px; }
+
+.ranking-grade { display: grid; grid-template-columns: 1fr 300px; gap: 20px; margin-top: 24px; align-items: start; }
+.ranking-grade .tabela { margin-top: 0; }
+.tabela-ranking td.posicao { font-size: 1.2rem; width: 50px; text-align: center; }
+.tabela-ranking tr.eu td { background: rgba(47,111,237,.08); font-weight: 600; }
+.lateral { display: grid; gap: 16px; }
+
+.ao-vivo { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; margin-top: 24px; }
+.painel-vivo { background: var(--card); border: 1px solid var(--borda); border-radius: 12px; padding: 16px 18px; }
+.painel-vivo h3 { font-size: 1rem; margin-bottom: 10px; }
+.lista-online { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+.lista-online li:not(.dica) { background: rgba(31,157,85,.12); color: var(--ok); padding: 3px 10px; border-radius: 20px; font-size: .85rem; font-weight: 600; }
+.feed { list-style: none; display: grid; gap: 6px; max-height: 260px; overflow-y: auto; }
+.feed li:not(.feed__vazio) { display: grid; grid-template-columns: 24px 1fr auto; gap: 8px; align-items: center; padding: 6px 8px; border-radius: 8px; font-size: .9rem; }
+.feed li.novo { animation: entrar-feed .5s ease, destaque 2s ease; }
+.feed__hora { color: var(--suave); font-size: .75rem; }
+@keyframes entrar-feed { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: none; } }
+@keyframes destaque { from { background: rgba(47,111,237,.18); } to { background: transparent; } }
+.piscar { animation: destaque 1.6s ease; }
+.estat.piscar { animation: estat-pulo .8s ease; }
+@keyframes estat-pulo { 0% { transform: scale(1); } 40% { transform: scale(1.05); box-shadow: 0 0 0 3px var(--primaria); } 100% { transform: scale(1); } }
+
+.aviso-banco {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 60;
+    background: var(--texto); color: var(--bg); padding: 12px 18px; border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.25); animation: surgir .3s ease;
+}
+.aviso-banco a { color: #8fb2ff; font-weight: 700; margin-left: 6px; }
+
+@media (max-width: 800px) {
+    .ranking-grade, .ao-vivo { grid-template-columns: 1fr; }
+    .online { display: none; }
+}
+.topo .container { max-width: 1180px; }
+nav { gap: 14px; }
