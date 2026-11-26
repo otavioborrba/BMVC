@@ -1,4 +1,4 @@
-% rebase('views/html/layout.tpl', title='Quiz · Guia de OO', usuario=usuario, scripts=['quiz.js'])
+% rebase('views/html/layout.tpl', title='Quiz · OOficina', usuario=usuario, scripts=['quiz.js'])
 
 <main class="container estreito">
     <div class="cabecalho-pagina">

@@ -1,10 +1,10 @@
-% rebase('views/html/layout.tpl', title='Questões · Guia de OO', usuario=usuario, mensagem=mensagem, scripts=['questoes.js'])
+% rebase('views/html/layout.tpl', title='Questões · OOficina', usuario=usuario, mensagem=mensagem, scripts=['questoes.js'])
 
 <main class="container">
     <div class="cabecalho-pagina">
         <div>
             <h1>Banco de questões</h1>
-            <p class="dica">{{len(questoes)}} questões cadastradas. Crie, edite ou exclua questões — elas aparecem no quiz de todos os usuários.</p>
+            <p class="dica">Área do administrador · {{len(questoes)}} questões cadastradas. As alterações aparecem no quiz de todos os estudantes.</p>
         </div>
         <div class="cabecalho-pagina__acoes">
             <a href="/quiz" class="btn btn--contorno-escuro">▶ Jogar quiz</a>

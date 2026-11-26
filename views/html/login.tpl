@@ -1,4 +1,4 @@
-% rebase('views/html/layout.tpl', title='Entrar · Guia de OO', usuario=None, mensagem=mensagem, scripts=['login.js'])
+% rebase('views/html/layout.tpl', title='Entrar · OOficina', usuario=None, mensagem=mensagem, scripts=['login.js'])
 
 <section class="hero hero--login">
     <div class="container hero-login">

@@ -1,6 +1,6 @@
 % editando = questao is not None
 % titulo = 'Editar questão #%d' % questao.id if editando else 'Nova questão'
-% rebase('views/html/layout.tpl', title=titulo + ' · Guia de OO', usuario=usuario, scripts=['questoes.js'])
+% rebase('views/html/layout.tpl', title=titulo + ' · OOficina', usuario=usuario, scripts=['questoes.js'])
 
 <main class="container estreito">
     <a href="/questoes" class="voltar">← Voltar para a lista</a>

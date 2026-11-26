@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}}</title>
     % # versão dos arquivos estáticos: mudar o número obriga o navegador a baixar de novo
-    % v = '5'
+    % v = '7'
     % # o tema escolhido fica num cookie, então a página já vem no tema certo
     % from bottle import request
     % tema = request.get_cookie('tema', '')
@@ -15,14 +15,25 @@
     % usuario = get('usuario', None)
     <header class="topo">
         <div class="container topo__conteudo">
-            <a class="logo" href="/">&lt;OO/&gt; Guia</a>
+            <a class="logo" href="/">
+                <span class="logo__icone">{ }</span>
+                <span class="logo__texto">
+                    <span class="logo__nome"><span class="logo__oo">OO</span>ficina</span>
+                    <span class="logo__sub">Laboratório de Orientação a Objetos</span>
+                </span>
+            </a>
             <nav>
                 % if usuario:
                 <a href="/guia">Guia</a>
                 <a href="/quiz">Quiz</a>
                 <a href="/desempenho">Desempenho</a>
+                % if usuario.eh_admin:
                 <a href="/questoes">Questões</a>
+                <a href="/admin" class="nav__admin">Painel</a>
+                <span class="nav__usuario">Administrador</span>
+                % else:
                 <span class="nav__usuario">Olá, {{usuario.primeiro_nome}}</span>
+                % end
                 <a href="/logout" class="nav__sair">Sair</a>
                 % end
                 <button id="btn-tema" class="btn-tema" type="button" aria-label="Alternar tema">{{'☀️' if tema == 'escuro' else '🌙'}}</button>
