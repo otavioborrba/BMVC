@@ -45,3 +45,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+// ---------- tempo real: números, online e feed do painel ----------
+document.addEventListener('tempo-real', e => {
+    const { tipo, dados } = e.detail;
+    if (tipo === 'estatisticas') {
+        [['est-usuarios', dados.usuarios], ['est-admins', dados.admins], ['est-questoes', dados.questoes],
+         ['est-quizzes', dados.quizzes], ['est-indice', dados.indice]].forEach(([id, valor]) => {
+            const el = document.getElementById(id);
+            if (el.textContent !== String(valor)) {
+                el.textContent = valor;
+                TempoReal.piscar(el.closest('.estat'));
+            }
+        });
+    }
+    if (tipo === 'online') TempoReal.mostrarOnline(document.getElementById('lista-online'), dados.nomes);
+    if (tipo === 'atividade') TempoReal.adicionarAtividade(document.getElementById('feed'), dados);
+});

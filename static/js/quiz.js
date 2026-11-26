@@ -125,3 +125,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+// ---------- tempo real: avisa quando o admin muda o banco de questões ----------
+document.addEventListener('tempo-real', e => {
+    if (e.detail.tipo !== 'questoes') return;
+    document.getElementById('total-questoes').textContent = e.detail.dados.total;
+    document.getElementById('aviso-banco').classList.remove('oculto');
+});

@@ -47,3 +47,83 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+// ================================================================
+// Tempo real (WebSocket)
+// A página se conecta ao servidor WebSocket (porta 8081) usando o token
+// que o controller colocou no <body>. Cada mensagem chega como
+// {tipo, dados} e é repassada para a página como o evento 'tempo-real'.
+// ================================================================
+(function () {
+    const token = document.body.dataset.wsToken;
+    const porta = document.body.dataset.wsPorta;
+    if (!token || !porta || !('WebSocket' in window)) return;
+
+    const indicador = document.getElementById('online');
+    let tentativas = 0;
+
+    function conectar() {
+        // "localhost" pode virar o endereço IPv6 (::1); o servidor escuta em IPv4
+        const host = location.hostname === 'localhost' ? '127.0.0.1' : location.hostname;
+        const ws = new WebSocket(`ws://${host}:${porta}/?token=${token}`);
+
+        ws.addEventListener('open', () => {
+            tentativas = 0;
+            indicador.classList.remove('desconectado');
+            indicador.title = 'Conectado em tempo real';
+            console.log('[BMVC] WebSocket conectado');
+        });
+
+        ws.addEventListener('message', evento => {
+            const msg = JSON.parse(evento.data);
+            if (msg.tipo === 'online') {
+                indicador.querySelector('b').textContent = msg.dados.total;
+                indicador.title = 'Online: ' + msg.dados.nomes.join(', ');
+            }
+            // avisa os scripts da página (ranking.js, admin.js, quiz.js...)
+            document.dispatchEvent(new CustomEvent('tempo-real', { detail: msg }));
+        });
+
+        ws.addEventListener('close', () => {
+            indicador.classList.add('desconectado');
+            indicador.querySelector('b').textContent = '–';
+            indicador.title = 'Reconectando...';
+            // tenta de novo: 1s, 2s, 4s... até 10s
+            const espera = Math.min(1000 * 2 ** tentativas++, 10000);
+            setTimeout(conectar, espera);
+        });
+    }
+
+    conectar();
+})();
+
+// Funções usadas pelas páginas com partes "ao vivo"
+window.TempoReal = {
+    mostrarOnline(lista, nomes) {
+        lista.innerHTML = '';
+        nomes.forEach(nome => {
+            const li = document.createElement('li');
+            li.textContent = nome;
+            lista.appendChild(li);
+        });
+    },
+    adicionarAtividade(feed, a) {
+        const vazio = feed.querySelector('.feed__vazio');
+        if (vazio) vazio.remove();
+        const li = document.createElement('li');
+        li.className = 'novo';
+        [['feed__icone', a.icone], ['feed__texto', a.texto], ['feed__hora', a.hora]].forEach(([classe, texto]) => {
+            const span = document.createElement('span');
+            span.className = classe;
+            span.textContent = texto;
+            li.appendChild(span);
+        });
+        feed.prepend(li);
+        while (feed.children.length > 20) feed.lastElementChild.remove();
+    },
+    piscar(el) {
+        el.classList.remove('piscar');
+        void el.offsetWidth;          // reinicia a animação
+        el.classList.add('piscar');
+    },
+};
