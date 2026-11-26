@@ -39,7 +39,7 @@ def logout():
     return ctl.logout()
 
 
-# ---------- CRUD de questões ----------
+# ---------- CRUD de questões (área restrita: administrador) ----------
 @app.get('/questoes')                       # Read (lista)
 def questoes_listar():
     return ctl.questoes_listar()
@@ -89,6 +89,22 @@ def quiz_resultado():
 @app.get('/desempenho')
 def desempenho():
     return ctl.desempenho()
+
+
+# ---------- Painel do administrador (área restrita) ----------
+@app.get('/admin')
+def admin():
+    return ctl.admin()
+
+
+@app.post('/admin/usuarios/<email>/perfil')
+def admin_alterar_perfil(email):
+    return ctl.admin_alterar_perfil(email)
+
+
+@app.post('/admin/usuarios/<email>/excluir')
+def admin_excluir_usuario(email):
+    return ctl.admin_excluir_usuario(email)
 
 
 @app.error(404)
