@@ -1,4 +1,4 @@
-% rebase('views/html/layout.tpl', title=pagina.titulo, usuario=usuario, mensagem=mensagem)
+% rebase('views/html/layout.tpl', title=pagina.titulo, usuario=usuario, ws_token=get('ws_token', ''), ws_porta=get('ws_porta', ''), mensagem=mensagem)
 
 <section class="hero">
     <div class="container">

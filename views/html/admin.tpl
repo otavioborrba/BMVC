@@ -1,4 +1,4 @@
-% rebase('views/html/layout.tpl', title='Painel do administrador · OOficina', usuario=usuario, mensagem=mensagem, scripts=['admin.js'])
+% rebase('views/html/layout.tpl', title='Painel do administrador · OOficina', usuario=usuario, ws_token=get('ws_token', ''), ws_porta=get('ws_porta', ''), mensagem=mensagem, scripts=['admin.js'])
 
 <main class="container">
     <div class="cabecalho-pagina">
@@ -12,21 +12,39 @@
 
     <div class="estatisticas">
         <div class="estat estat--destaque">
-            <span class="estat__valor">{{total_usuarios}}</span>
-            <span class="estat__rotulo">Usuários cadastrados ({{total_admins}} admin)</span>
+            <span class="estat__valor" id="est-usuarios">{{total_usuarios}}</span>
+            <span class="estat__rotulo">Usuários cadastrados (<span id="est-admins">{{total_admins}}</span> admin)</span>
         </div>
         <div class="estat">
-            <span class="estat__valor">{{total_questoes}}</span>
+            <span class="estat__valor" id="est-questoes">{{total_questoes}}</span>
             <span class="estat__rotulo">Questões no banco</span>
         </div>
         <div class="estat">
-            <span class="estat__valor">{{geral.quizzes}}</span>
+            <span class="estat__valor" id="est-quizzes">{{geral.quizzes}}</span>
             <span class="estat__rotulo">Quizzes respondidos</span>
         </div>
         <div class="estat">
-            <span class="estat__valor">{{'%d%%' % geral.indice_geral if geral.respondidas else '—'}}</span>
+            <span class="estat__valor" id="est-indice">{{'%d%%' % geral.indice_geral if geral.respondidas else '—'}}</span>
             <span class="estat__rotulo">Índice médio de acerto</span>
         </div>
+    </div>
+
+    <div class="ao-vivo">
+        <section class="painel-vivo">
+            <h3><span class="pulso"></span> Online agora</h3>
+            <ul id="lista-online" class="lista-online"><li class="dica">Conectando...</li></ul>
+        </section>
+        <section class="painel-vivo">
+            <h3><span class="pulso"></span> Atividade em tempo real</h3>
+            <ul id="feed" class="feed">
+                % for a in atividades:
+                <li><span class="feed__icone">{{a['icone']}}</span><span class="feed__texto">{{a['texto']}}</span><span class="feed__hora">{{a['hora']}}</span></li>
+                % end
+                % if not atividades:
+                <li class="feed__vazio dica">Nada ainda. As ações dos usuários aparecem aqui na hora.</li>
+                % end
+            </ul>
+        </section>
     </div>
 
     <h2>Usuários</h2>

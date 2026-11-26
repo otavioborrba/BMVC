@@ -1,4 +1,4 @@
-% rebase('views/html/layout.tpl', title='Desempenho · OOficina', usuario=usuario, scripts=['desempenho.js'])
+% rebase('views/html/layout.tpl', title='Desempenho · OOficina', usuario=usuario, ws_token=get('ws_token', ''), ws_porta=get('ws_porta', ''), scripts=['desempenho.js'])
 
 <main class="container">
     <div class="cabecalho-pagina">

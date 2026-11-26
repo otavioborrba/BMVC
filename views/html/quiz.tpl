@@ -1,10 +1,10 @@
-% rebase('views/html/layout.tpl', title='Quiz · OOficina', usuario=usuario, scripts=['quiz.js'])
+% rebase('views/html/layout.tpl', title='Quiz · OOficina', usuario=usuario, ws_token=get('ws_token', ''), ws_porta=get('ws_porta', ''), scripts=['quiz.js'])
 
 <main class="container estreito">
     <div class="cabecalho-pagina">
         <div>
             <h1>Quiz de OO</h1>
-            <p class="dica">Rodadas de até 10 perguntas sorteadas entre {{total}} questões.</p>
+            <p class="dica">Rodadas de até 10 perguntas sorteadas entre <span id="total-questoes">{{total}}</span> questões.</p>
         </div>
         <a href="/desempenho" class="btn btn--contorno-escuro">Meu desempenho</a>
     </div>
@@ -46,5 +46,9 @@
         </div>
     </div>
 </main>
+
+<div id="aviso-banco" class="aviso-banco oculto">
+    🔄 O banco de questões foi atualizado agora por um administrador. <a href="/quiz">Recarregar</a>
+</div>
 
 <script>window.QUESTOES = {{!dados_json}};</script>

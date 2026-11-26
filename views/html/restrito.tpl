@@ -1,4 +1,4 @@
-% rebase('views/html/layout.tpl', title='Acesso restrito · OOficina', usuario=usuario)
+% rebase('views/html/layout.tpl', title='Acesso restrito · OOficina', usuario=usuario, ws_token=get('ws_token', ''), ws_porta=get('ws_porta', ''))
 <main class="container erro restrito">
     <div class="restrito__icone">🔒</div>
     <h1>403</h1>

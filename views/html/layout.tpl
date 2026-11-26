@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}}</title>
     % # versão dos arquivos estáticos: mudar o número obriga o navegador a baixar de novo
-    % v = '7'
+    % v = '9'
     % # o tema escolhido fica num cookie, então a página já vem no tema certo
     % from bottle import request
     % tema = request.get_cookie('tema', '')
     <link rel="stylesheet" href="/static/css/style.css?v={{v}}">
 </head>
-<body class="{{'escuro' if tema == 'escuro' else ''}}">
+<body class="{{'escuro' if tema == 'escuro' else ''}}" data-ws-porta="{{get('ws_porta', '')}}" data-ws-token="{{get('ws_token', '')}}">
     % usuario = get('usuario', None)
     <header class="topo">
         <div class="container topo__conteudo">
@@ -27,6 +27,7 @@
                 <a href="/guia">Guia</a>
                 <a href="/quiz">Quiz</a>
                 <a href="/desempenho">Desempenho</a>
+                <a href="/ranking">Ranking</a>
                 % if usuario.eh_admin:
                 <a href="/questoes">Questões</a>
                 <a href="/admin" class="nav__admin">Painel</a>
@@ -34,6 +35,7 @@
                 % else:
                 <span class="nav__usuario">Olá, {{usuario.primeiro_nome}}</span>
                 % end
+                <span id="online" class="online desconectado" title="Conectando ao tempo real..."><i></i><b>–</b> online</span>
                 <a href="/logout" class="nav__sair">Sair</a>
                 % end
                 <button id="btn-tema" class="btn-tema" type="button" aria-label="Alternar tema">{{'☀️' if tema == 'escuro' else '🌙'}}</button>
