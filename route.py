@@ -6,9 +6,15 @@ from bottle import Bottle, run, static_file
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 from controllers.application import Application
+from controllers.tempo_real import CentralTempoReal
 
 app = Bottle()
-ctl = Application()
+
+# servidor WebSocket (tempo real) numa thread separada, na porta 8081
+tempo_real = CentralTempoReal(host='127.0.0.1', porta=8081)
+tempo_real.iniciar()
+
+ctl = Application(tempo_real)
 
 
 # ---------- Arquivos estáticos (CSS, JS, imagens) ----------
@@ -91,6 +97,11 @@ def desempenho():
     return ctl.desempenho()
 
 
+@app.get('/ranking')                        # atualizado em tempo real (WebSocket)
+def ranking():
+    return ctl.ranking()
+
+
 # ---------- Painel do administrador (área restrita) ----------
 @app.get('/admin')
 def admin():
@@ -113,4 +124,5 @@ def nao_encontrado(error):
 
 
 if __name__ == '__main__':
-    run(app, host='localhost', port=8080, debug=True, reloader=True)
+    # reloader desligado: com ele o Python abriria o WebSocket duas vezes
+    run(app, host='localhost', port=8080, debug=True)
