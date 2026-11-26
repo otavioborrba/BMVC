@@ -50,7 +50,7 @@ class Usuario:
 
     def pode_acessar(self, area):
         """Diz se o usuário pode entrar em uma área do site."""
-        return area in ('guia', 'quiz', 'desempenho')
+        return area in ('guia', 'quiz', 'desempenho', 'ranking')
 
     def como(self, classe):
         """Cria uma cópia deste usuário como outra classe (usado para promover/rebaixar)."""
