@@ -1,10 +1,12 @@
-# models/usuario.py — Model: usuário que acessa o sistema
+# models/usuario.py — Model: usuários do sistema (estudante e administrador)
 import hashlib
 import os
 
 
 class Usuario:
-    """Usuário: estuda pelo guia, gerencia o banco de questões, joga o quiz e vê o desempenho."""
+    """Estudante: estuda pelo guia, joga o quiz e acompanha o próprio desempenho."""
+
+    tipo = 'estudante'
 
     def __init__(self, nome, email, senha_hash, sal):
         self.__nome = nome
@@ -37,11 +39,47 @@ class Usuario:
     def primeiro_nome(self):
         return self.__nome.split()[0]
 
+    # ---- controle de acesso: cada classe responde do seu jeito (polimorfismo) ----
+    @property
+    def eh_admin(self):
+        return False
+
+    @property
+    def perfil(self):
+        return 'Estudante'
+
+    def pode_acessar(self, area):
+        """Diz se o usuário pode entrar em uma área do site."""
+        return area in ('guia', 'quiz', 'desempenho')
+
+    def como(self, classe):
+        """Cria uma cópia deste usuário como outra classe (usado para promover/rebaixar)."""
+        return classe(self.__nome, self.__email, self.__senha_hash, self.__sal)
+
     # ---- conversão para salvar em JSON ----
     def to_dict(self):
-        return {'nome': self.__nome, 'email': self.__email,
+        return {'nome': self.__nome, 'email': self.__email, 'tipo': self.tipo,
                 'senha_hash': self.__senha_hash, 'sal': self.__sal}
 
-    @classmethod
-    def from_dict(cls, d):
-        return cls(d['nome'], d['email'], d['senha_hash'], d['sal'])
+    @staticmethod
+    def from_dict(d):
+        # escolhe a classe certa de acordo com o tipo salvo no JSON
+        classe = Administrador if d.get('tipo') == 'admin' else Usuario
+        return classe(d['nome'], d['email'], d['senha_hash'], d['sal'])
+
+
+class Administrador(Usuario):
+    """Administrador: herda tudo do estudante e ainda gerencia questões e usuários."""
+
+    tipo = 'admin'
+
+    @property
+    def eh_admin(self):
+        return True
+
+    @property
+    def perfil(self):
+        return 'Administrador'
+
+    def pode_acessar(self, area):
+        return area in ('questoes', 'admin') or super().pode_acessar(area)

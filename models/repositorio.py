@@ -2,7 +2,7 @@
 import json
 import os
 
-from models.usuario import Usuario
+from models.usuario import Usuario, Administrador
 from models.questao import Questao
 from models.resultado import Resultado
 
@@ -47,8 +47,42 @@ class RepositorioUsuarios(Repositorio):
 
     arquivo = 'usuarios.json'
 
+    # conta de administrador criada automaticamente quando não existe nenhuma
+    ADMIN_EMAIL = 'admin@bmvc.com'
+    ADMIN_SENHA = 'admin123'
+
+    def __init__(self, pasta='data'):
+        super().__init__(pasta)
+        if not any(u.eh_admin for u in self._itens):
+            self._itens.append(Administrador.criar('Administrador', self.ADMIN_EMAIL, self.ADMIN_SENHA))
+            self._salvar()
+
     def converter(self, dados):
         return Usuario.from_dict(dados)
+
+    def total_admins(self):
+        return sum(1 for u in self._itens if u.eh_admin)
+
+    def alterar_perfil(self, email, para_admin):
+        """Promove um estudante a administrador ou rebaixa um administrador."""
+        usuario = self.buscar(email)
+        if usuario is None:
+            raise KeyError(email)
+        if usuario.eh_admin and not para_admin and self.total_admins() == 1:
+            raise ValueError('O sistema precisa ter pelo menos um administrador.')
+        novo = usuario.como(Administrador if para_admin else Usuario)
+        self._itens[self._itens.index(usuario)] = novo
+        self._salvar()
+        return novo
+
+    def excluir(self, email):
+        usuario = self.buscar(email)
+        if usuario is None:
+            raise KeyError(email)
+        if usuario.eh_admin and self.total_admins() == 1:
+            raise ValueError('Não é possível excluir o único administrador.')
+        self._itens.remove(usuario)
+        self._salvar()
 
     def buscar(self, email):
         email = (email or '').lower()
@@ -191,3 +225,7 @@ class RepositorioResultados(Repositorio):
 
     def do_usuario(self, email):
         return [r for r in self._itens if r.email == email]
+
+    def excluir_do_usuario(self, email):
+        self._itens = [r for r in self._itens if r.email != email]
+        self._salvar()
